@@ -8,7 +8,7 @@ domain=$2
 rootDir=$3
 owner=$(who am i | awk '{print $1}')
 apacheUser=$(ps -ef | egrep '(httpd|apache2|apache)' | grep -v root | head -n1 | awk '{print $1}')
-email='webmaster@localhost'
+email='info@$domain'
 sitesEnabled='/etc/apache2/sites-enabled/'
 sitesAvailable='/etc/apache2/sites-available/'
 userDir='/var/www/'
@@ -73,7 +73,7 @@ if [ "$action" == 'create' ]
 		<VirtualHost *:80>
 			ServerAdmin $email
 			ServerName $domain
-			ServerAlias $domain
+			ServerAlias www.$domain
 			DocumentRoot $rootDir
 			<Directory />
 				AllowOverride All
@@ -127,6 +127,8 @@ if [ "$action" == 'create' ]
 
 		### enable website
 		a2ensite $domain
+		### enable rewrite
+		a2enmod rewrite
 
 		### restart Apache
 		/etc/init.d/apache2 reload
@@ -153,6 +155,7 @@ if [ "$action" == 'create' ]
 
 			### disable website
 			a2dissite $domain
+			
 
 			### restart Apache
 			/etc/init.d/apache2 reload
